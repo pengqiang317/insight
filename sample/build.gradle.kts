@@ -38,6 +38,6 @@ android {
 }
 
 dependencies {
-    implementation(project(":insight"))
+    implementation("com.github.pengqiang317:insight:0.1.0")
     implementation("androidx.fragment:fragment:1.8.6")
 }

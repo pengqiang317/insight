@@ -11,7 +11,7 @@ minSdk 24。会带上 `kotlin-stdlib` 和 `androidx.fragment`。
 ```gradle
 maven { url 'https://jitpack.io' }
 dependencies {
-    implementation 'com.github.pengqiang317.insight:insight:0.1.0'
+    implementation 'com.github.pengqiang317:insight:0.1.0'
 }
 ```
 
