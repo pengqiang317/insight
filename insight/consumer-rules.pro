@@ -1,0 +1,7 @@
+-keep class com.bigtree.insight.Insight { *; }
+-keep class com.bigtree.insight.InsightConfig { *; }
+-keep class com.bigtree.insight.InsightConfig$Builder { *; }
+-keep class com.bigtree.insight.InsightSpan { *; }
+-keep class com.bigtree.insight.InsightListener { *; }
+-keep class com.bigtree.insight.InsightInitProvider { *; }
+-keep class com.bigtree.insight.NativeBridge { *; }

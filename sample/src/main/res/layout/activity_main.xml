@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <TextView
+            android:id="@+id/log"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="13sp" />
+    </ScrollView>
+
+    <Button
+        android:id="@+id/open_second"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="打开第二个界面" />
+
+    <Button
+        android:id="@+id/slow_task"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="主线程慢任务 300ms" />
+
+    <Button
+        android:id="@+id/java_crash"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="触发 Java 崩溃" />
+
+    <Button
+        android:id="@+id/native_crash"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="触发 Native 崩溃" />
+
+    <Button
+        android:id="@+id/show_pending"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="读取上次记录" />
+
+    <FrameLayout
+        android:id="@+id/fragment_slot"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>
