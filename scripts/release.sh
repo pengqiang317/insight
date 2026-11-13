@@ -61,7 +61,7 @@ if head_version == insight_version:
     sys.exit(1)
 
 sample = Path("sample/build.gradle.kts").read_text(encoding="utf-8")
-coordinate = f"com.github.pengqiang317:insight:{insight_version}"
+coordinate = f"com.github.sz-bigtree:insight:{insight_version}"
 if coordinate in sample:
     print(
         f"sample 不能提前依赖 {coordinate}。请保持上一个已发布版本 {head_version}，等 JitPack 编完再改。",
@@ -79,12 +79,12 @@ if git rev-parse -q --verify "refs/tags/${VERSION}" >/dev/null; then
   exit 1
 fi
 
-if gh api "repos/pengqiang317/insight/git/refs/tags/${VERSION}" >/dev/null 2>&1; then
+if gh api "repos/sz-bigtree/insight/git/refs/tags/${VERSION}" >/dev/null 2>&1; then
   echo "远程已有 tag ${VERSION}，不会覆盖。"
   exit 1
 fi
 
-remote_main="$(gh api repos/pengqiang317/insight/commits/main --jq .sha)"
+remote_main="$(gh api repos/sz-bigtree/insight/commits/main --jq .sha)"
 local_head="$(git rev-parse HEAD)"
 if [[ "$remote_main" != "$local_head" ]]; then
   echo "远程 main 是 ${remote_main}，本地 HEAD 是 ${local_head}。请先对齐后再发布。"
@@ -96,8 +96,8 @@ import sys
 from pathlib import Path
 
 new, old = sys.argv[1], sys.argv[2]
-coordinate_old = f"com.github.pengqiang317:insight:{old}"
-coordinate_new = f"com.github.pengqiang317:insight:{new}"
+coordinate_old = f"com.github.sz-bigtree:insight:{old}"
+coordinate_new = f"com.github.sz-bigtree:insight:{new}"
 
 readme = Path("README.md")
 readme_text = readme.read_text(encoding="utf-8")
@@ -144,10 +144,10 @@ if [[ -z "${notes// }" ]]; then
   exit 1
 fi
 
-GIT_AUTHOR_NAME="pengqiang317" \
-GIT_AUTHOR_EMAIL="145394490+pengqiang317@users.noreply.github.com" \
-GIT_COMMITTER_NAME="pengqiang317" \
-GIT_COMMITTER_EMAIL="145394490+pengqiang317@users.noreply.github.com" \
+GIT_AUTHOR_NAME="sz-bigtree" \
+GIT_AUTHOR_EMAIL="145394490+sz-bigtree@users.noreply.github.com" \
+GIT_COMMITTER_NAME="sz-bigtree" \
+GIT_COMMITTER_EMAIL="145394490+sz-bigtree@users.noreply.github.com" \
 git commit -m "$(cat <<EOF
 发布 ${VERSION}
 
@@ -233,7 +233,7 @@ for kind, path in entries:
     listed = git("ls-tree", "HEAD", "--", path).strip()
     mode, _, blob_sha, _ = listed.split(maxsplit=3)
     content = git("cat-file", "blob", blob_sha, text=False)
-    blob = api("POST", "/repos/pengqiang317/insight/git/blobs", {
+    blob = api("POST", "/repos/sz-bigtree/insight/git/blobs", {
         "content": base64.b64encode(content).decode(),
         "encoding": "base64",
     })
@@ -242,7 +242,7 @@ for kind, path in entries:
         sys.exit(1)
     tree.append({"path": path, "mode": mode, "type": "blob", "sha": blob_sha})
 
-created_tree = api("POST", "/repos/pengqiang317/insight/git/trees", {
+created_tree = api("POST", "/repos/sz-bigtree/insight/git/trees", {
     "base_tree": parent_tree,
     "tree": tree,
 })
@@ -251,7 +251,7 @@ if created_tree["sha"] != expect_tree:
     sys.exit(1)
 
 person = lambda name, email, date: {"name": name, "email": email, "date": date}
-commit = api("POST", "/repos/pengqiang317/insight/git/commits", {
+commit = api("POST", "/repos/sz-bigtree/insight/git/commits", {
     "message": message,
     "tree": created_tree["sha"],
     "parents": [parent],
@@ -263,7 +263,7 @@ if commit["sha"] != expect_commit:
     print("远程 main 尚未更新。", file=sys.stderr)
     sys.exit(1)
 
-ref = api("PATCH", "/repos/pengqiang317/insight/git/refs/heads/main", {
+ref = api("PATCH", "/repos/sz-bigtree/insight/git/refs/heads/main", {
     "sha": commit["sha"],
     "force": False,
 })
@@ -271,12 +271,12 @@ if ref["object"]["sha"] != expect_commit:
     print("更新 main 后的提交不一致。", file=sys.stderr)
     sys.exit(1)
 
-api("POST", "/repos/pengqiang317/insight/git/refs", {
+api("POST", "/repos/sz-bigtree/insight/git/refs", {
     "ref": f"refs/tags/{version}",
     "sha": expect_commit,
 })
 print(f"已推送 main 和 tag {version}：{expect_commit}")
 PY
 
-echo "JitPack：https://jitpack.io/#pengqiang317/insight/${VERSION}"
-echo "等到 insight-${VERSION}.aar 出现后，再把 sample 的依赖改成 com.github.pengqiang317:insight:${VERSION}。"
+echo "JitPack：https://jitpack.io/#sz-bigtree/insight/${VERSION}"
+echo "等到 insight-${VERSION}.aar 出现后，再把 sample 的依赖改成 com.github.sz-bigtree:insight:${VERSION}。"

@@ -6,12 +6,12 @@ minSdk 24。会带上 `kotlin-stdlib` 和 `androidx.fragment`。
 
 ## 引用
 
-仓库在 [pengqiang317/insight](https://github.com/pengqiang317/insight)。其它工程用 JitPack 引用 tag `0.1.1`：
+仓库在 [sz-bigtree/insight](https://github.com/sz-bigtree/insight)。其它工程用 JitPack 引用 tag `0.1.2`：
 
 ```gradle
 maven { url 'https://jitpack.io' }
 dependencies {
-    implementation 'com.github.pengqiang317:insight:0.1.1'
+    implementation 'com.github.sz-bigtree:insight:0.1.2'
 }
 ```
 

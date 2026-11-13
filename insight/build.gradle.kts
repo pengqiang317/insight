@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.bigtree.insight"
-version = "0.1.1"
+version = "0.1.2"
 
 android {
     namespace = "com.bigtree.insight"

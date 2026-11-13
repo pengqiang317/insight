@@ -6,7 +6,7 @@ import android.os.SystemClock
 import com.bigtree.insight.internal.Engine
 
 object Insight {
-    const val VERSION = "0.1.1"
+    const val VERSION = "0.1.2"
 
     /**
      * 依赖进来就会自动安装。其它进程、或者想在其它 SDK 之后确认安装时，可以再调一次。
