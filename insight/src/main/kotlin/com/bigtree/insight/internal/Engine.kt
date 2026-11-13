@@ -48,6 +48,8 @@ internal object Engine {
 
     lateinit var root: File
         private set
+
+    fun hasRoot(): Boolean = ::root.isInitialized
     lateinit var outbox: File
         private set
     lateinit var nativeDir: File
@@ -88,6 +90,7 @@ internal object Engine {
             BlockWatch.start()
             io.execute {
                 try {
+                    CrashLog.trim()
                     ExitCollector.collect()
                     logPendingCount()
                     scheduleUpload()
@@ -225,11 +228,19 @@ internal object Engine {
         if (!ready) {
             return
         }
-        io.execute { store.write(outbox, record) }
+        if (CrashLog.isException(type)) {
+            CrashLog.append(record)
+        } else {
+            io.execute { store.write(outbox, record) }
+        }
     }
 
     fun writeSync(record: JSONObject): File? {
         if (!ready) {
+            return null
+        }
+        if (CrashLog.isException(record.optString("type"))) {
+            CrashLog.append(record)
             return null
         }
         return store.write(outbox, record)
@@ -241,7 +252,7 @@ internal object Engine {
         }
         val endpoint = config.endpoint ?: return
         io.execute {
-            runCatching { Uploader.upload(endpoint, outbox) }
+            runCatching { Uploader.upload(endpoint, outbox, CrashLog.uploadDir()) }
                 .onFailure { Log.w(TAG, "upload failed", it) }
         }
     }
@@ -250,16 +261,14 @@ internal object Engine {
         if (!ready) {
             return emptyList()
         }
-        val files = outbox.listFiles()?.filter { it.isFile } ?: return emptyList()
-        val crashes = files.filter { file ->
-            file.name.startsWith("java_crash") ||
-                file.name.startsWith("native_crash") ||
-                file.name.startsWith("anr")
-        }.sortedByDescending { it.lastModified() }
-        val rest = files.filter { it !in crashes }
+        val files = outbox.listFiles()?.filter { it.isFile && !it.name.startsWith(".") } ?: emptyList()
+        val crashes = CrashLog.summaries()
+        val oldCrashes = files.filter { CrashLog.isStoredException(it.name) }
+            .sortedByDescending { it.lastModified() }
+        val rest = files.filter { !CrashLog.isStoredException(it.name) }
             .sortedByDescending { it.lastModified() }
             .take(6)
-        val lines = (crashes + rest).map { summarizeRecord(it) }
+        val lines = crashes + oldCrashes.map { summarizeRecord(it) } + rest.map { summarizeRecord(it) }
         lines.forEach { Log.i(TAG, it) }
         return lines
     }

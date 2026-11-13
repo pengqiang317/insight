@@ -19,7 +19,7 @@ internal object ExitCollector {
                 if (match != null) {
                     used.add(match.file)
                 }
-                if (exit.reason == 4 && match == null && hasJavaCrashNear(exit.timestamp)) {
+                if (exit.reason == 4 && match == null && CrashLog.containsJavaCrashNear(exit.timestamp)) {
                     continue
                 }
                 writeExit(exit, match)
@@ -92,18 +92,6 @@ internal object ExitCollector {
                 timeMs = (seconds ?: file.lastModified() / 1000L) * 1000L,
                 signal = signal,
             )
-        }
-    }
-
-    private fun hasJavaCrashNear(timestamp: Long): Boolean {
-        val files = Engine.outbox.listFiles() ?: return false
-        return files.any { file ->
-            if (!file.name.startsWith("java_crash-")) {
-                return@any false
-            }
-            val ts = file.name.removePrefix("java_crash-").substringBefore('.').substringBefore('-').toLongOrNull()
-                ?: return@any false
-            abs(ts - timestamp) <= MERGE_WINDOW_MS
         }
     }
 

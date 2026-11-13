@@ -4,8 +4,6 @@ import android.util.Log
 import com.bigtree.insight.NativeBridge
 import org.json.JSONArray
 import org.json.JSONObject
-import java.io.File
-import java.io.FileOutputStream
 
 internal object CrashReporter {
     fun install() {
@@ -30,11 +28,7 @@ internal object CrashReporter {
                     .put("threads", otherThreads(thread))
                     .put("breadcrumbs", Engine.snapshotCrumbs())
                 val record = Engine.envelope("java_crash", data)
-                val file = File(Engine.outbox, "java_crash-${System.currentTimeMillis()}.json")
-                FileOutputStream(file).use { stream ->
-                    stream.write(record.toString().toByteArray(Charsets.UTF_8))
-                    stream.fd.sync()
-                }
+                CrashLog.append(record)
                 Log.e(
                     Engine.TAG,
                     Engine.stamp(

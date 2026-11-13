@@ -6,16 +6,16 @@ minSdk 24。会带上 `kotlin-stdlib` 和 `androidx.fragment`。
 
 ## 引用
 
-仓库在 [pengqiang317/insight](https://github.com/pengqiang317/insight)。其它工程用 JitPack 引用 tag `0.1.0`：
+仓库在 [pengqiang317/insight](https://github.com/pengqiang317/insight)。其它工程用 JitPack 引用 tag `0.1.1`：
 
 ```gradle
 maven { url 'https://jitpack.io' }
 dependencies {
-    implementation 'com.github.pengqiang317:insight:0.1.0'
+    implementation 'com.github.pengqiang317:insight:0.1.1'
 }
 ```
 
-只加依赖就会开始计时，并接住 Java 崩溃。不配置服务器时，记录写在应用私有目录 `files/insight/outbox/`，调试包同时打到 Logcat，过滤 `Insight`。
+只加依赖就会开始计时，并接住 Java 崩溃。不配置服务器时，性能记录写在 `files/insight/outbox/`。异常按天追加在 `files/insight/crashes/yyyy-MM-dd.txt`，上传成功后仍保留。调试包同时打到 Logcat，过滤 `Insight`。
 
 需要上报或调整阈值时：
 

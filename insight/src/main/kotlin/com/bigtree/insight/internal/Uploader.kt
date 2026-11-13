@@ -6,9 +6,12 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 internal object Uploader {
-    fun upload(endpoint: String, outbox: File) {
-        val files = outbox.listFiles()?.sortedBy { it.lastModified() } ?: return
-        for (file in files) {
+    fun upload(endpoint: String, outbox: File, queue: File) {
+        if (!uploadOutbox(endpoint, outbox)) {
+            return
+        }
+        val queued = queue.listFiles()?.filter { it.isFile }?.sortedBy { it.lastModified() } ?: return
+        for (file in queued) {
             val body = runCatching { file.readText() }.getOrNull() ?: continue
             if (!post(endpoint, body)) {
                 Log.w(Engine.TAG, "upload stopped at ${file.name}")
@@ -16,6 +19,32 @@ internal object Uploader {
             }
             file.delete()
         }
+    }
+
+    private fun uploadOutbox(endpoint: String, outbox: File): Boolean {
+        val marker = File(outbox, ".uploaded")
+        val sent = marker.takeIf { it.isFile }?.readLines()?.toMutableSet() ?: mutableSetOf()
+        val files = outbox.listFiles()
+            ?.filter { it.isFile && !it.name.startsWith(".") }
+            ?.sortedBy { it.lastModified() }
+            ?: return true
+        for (file in files) {
+            if (file.name in sent) {
+                continue
+            }
+            val body = runCatching { file.readText() }.getOrNull() ?: continue
+            if (!post(endpoint, body)) {
+                Log.w(Engine.TAG, "upload stopped at ${file.name}")
+                return false
+            }
+            if (CrashLog.isStoredException(file.name)) {
+                sent.add(file.name)
+                marker.writeText(sent.joinToString("\n"))
+            } else {
+                file.delete()
+            }
+        }
+        return true
     }
 
     private fun post(endpoint: String, body: String): Boolean {
